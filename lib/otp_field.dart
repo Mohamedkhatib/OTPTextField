@@ -195,13 +195,15 @@ class _OTPTextFieldState extends State<OTPTextField> {
       child: AbsorbPointer(
           absorbing: !enabled,
           child: TextField(
+            autofillHints: const [AutofillHints.oneTimeCode],
+
             controller: _textControllers[index],
             keyboardType: widget.keyboardType,
             textCapitalization: widget.textCapitalization,
             textAlign: TextAlign.center,
             style: widget.style,
             inputFormatters: widget.inputFormatter,
-            maxLength: 1,
+
             focusNode: _focusNodes[index],
             obscureText: widget.obscureText,
 
@@ -272,7 +274,7 @@ class _OTPTextFieldState extends State<OTPTextField> {
     if (focusNode == null || controller == null) return;
 
     if (focusNode.hasFocus) {
-      controller.text = '';
+       controller.text = '';
     }
   }
 
@@ -295,7 +297,7 @@ class _OTPTextFieldState extends State<OTPTextField> {
       _pin[i] = digit;
     }
 
-    FocusScope.of(context).requestFocus(_focusNodes[widget.length - 1]);
+      FocusScope.of(context).unfocus( );
 
     String currentPin = _getCurrentPin();
 
