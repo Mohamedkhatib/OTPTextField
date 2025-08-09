@@ -81,11 +81,10 @@ class OTPTextField extends StatefulWidget {
     this.onChanged,
     this.inputFormatter,
     this.contentPadding =
-    const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+        const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
     this.isDense = false,
     this.onCompleted,
-  })
-      : assert(length > 1),
+  })  : assert(length > 1),
         super(key: key);
 
   @override
@@ -98,7 +97,7 @@ class _OTPTextFieldState extends State<OTPTextField> {
   late List<TextEditingController?> _textControllers;
 
   late List<String> _pin;
-
+bool initialFocsIsDone =false;
   @override
   void initState() {
     super.initState();
@@ -156,13 +155,19 @@ class _OTPTextFieldState extends State<OTPTextField> {
       focusNode = _focusNodes[index];
       focusNode?.addListener((() => handleFocusChange(index)));
       focusNode!.onKey = ((FocusNode node, RawKeyEvent event) {
-        if (node.hasFocus && index != 0 &&
-            event.isKeyPressed(  LogicalKeyboardKey.backspace)  ) {
-          _focusNodes[index -1 ]!.requestFocus();
-
+        if (node.hasFocus &&
+            index != 0 &&
+            event.isKeyPressed(LogicalKeyboardKey.backspace)) {
+          _focusNodes[index - 1]!.requestFocus();
         }
         return KeyEventResult.ignored;
       });
+    }
+    if (index == 0 && initialFocsIsDone == false) {
+      if (_focusNodes.any((f) => !(f?.hasFocus ?? false))) {
+        initialFocsIsDone = true;
+        focusNode.requestFocus();
+      }
     }
     if (textEditingController == null) {
       _textControllers[index] = TextEditingController();
@@ -172,18 +177,18 @@ class _OTPTextFieldState extends State<OTPTextField> {
     final isLast = index == widget.length - 1;
     final enabled = index != 0
         ? (_textControllers[index - 1]?.text.isNotEmpty ?? false) ||
-        (textEditingController!.text.isNotEmpty)
+            (textEditingController!.text.isNotEmpty)
         : true;
 
     InputBorder _getBorder(Color color) {
       final colorOrError =
-      widget.hasError ? _otpFieldStyle.errorBorderColor : color;
+          widget.hasError ? _otpFieldStyle.errorBorderColor : color;
 
       return widget.fieldStyle == FieldStyle.box
           ? OutlineInputBorder(
-        borderSide: BorderSide(color: colorOrError),
-        borderRadius: BorderRadius.circular(widget.outlineBorderRadius),
-      )
+              borderSide: BorderSide(color: colorOrError),
+              borderRadius: BorderRadius.circular(widget.outlineBorderRadius),
+            )
           : UnderlineInputBorder(borderSide: BorderSide(color: colorOrError));
     }
 
@@ -196,17 +201,14 @@ class _OTPTextFieldState extends State<OTPTextField> {
           absorbing: !enabled,
           child: TextField(
             autofillHints: const [AutofillHints.oneTimeCode],
-
             controller: _textControllers[index],
             keyboardType: widget.keyboardType,
             textCapitalization: widget.textCapitalization,
             textAlign: TextAlign.center,
             style: widget.style,
             inputFormatters: widget.inputFormatter,
-
             focusNode: _focusNodes[index],
             obscureText: widget.obscureText,
-
             decoration: InputDecoration(
               isDense: widget.isDense,
               filled: true,
@@ -262,7 +264,6 @@ class _OTPTextFieldState extends State<OTPTextField> {
               // Call the `onChanged` callback function
               widget.onChanged!(currentPin);
             },
-
           )),
     );
   }
@@ -274,7 +275,7 @@ class _OTPTextFieldState extends State<OTPTextField> {
     if (focusNode == null || controller == null) return;
 
     if (focusNode.hasFocus) {
-       controller.text = '';
+      controller.text = '';
     }
   }
 
@@ -297,7 +298,7 @@ class _OTPTextFieldState extends State<OTPTextField> {
       _pin[i] = digit;
     }
 
-      FocusScope.of(context).unfocus( );
+    FocusScope.of(context).unfocus();
 
     String currentPin = _getCurrentPin();
 
@@ -344,8 +345,7 @@ class OtpFieldController {
     final textFieldLength = _otpTextFieldState.widget.length;
     if (pin.length < textFieldLength) {
       throw Exception(
-          "Pin length must be same as field length. Expected: $textFieldLength, Found ${pin
-              .length}");
+          "Pin length must be same as field length. Expected: $textFieldLength, Found ${pin.length}");
     }
 
     _otpTextFieldState._pin = pin;
