@@ -248,6 +248,7 @@ bool initialFocsIsDone =false;
               if (str.isNotEmpty) _focusNodes[index]!.unfocus();
               // Set focus to the next field if available
               if (index + 1 != widget.length && str.isNotEmpty) {
+                _pin[index+1] ='';
                 FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
               }
 
